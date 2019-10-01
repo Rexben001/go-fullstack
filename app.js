@@ -2,6 +2,8 @@ const express = require('express');// imports express
 
 const app = express();
 
+const bodyParser= require('body-parser');
+
 //middlewares
 
 //setting cors
@@ -15,22 +17,33 @@ app.use((req,res,next)=>{
 
 }); //allows access to api in any platform
 
+app.use(bodyParser.json()); // change request to json
+
+app.post('/api/stuff', (req, res, next)=>{
+    console.log(req.body);
+    next();
+});
+
+app.use((req, res )=>{
+    res.status(201).json({message: 'thing created successfully'});
+
+})
 app.use('/api/stuff', (req, res)=>{
-    res.status(200).json([
+    res.json([
         {
             _id: "thingid",
             title: "first thing",
             description: "description of first thing",
-            imageUrl: "",
+            imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Canon_EOS_60D_01.jpg",
             price: 2900,
-            userId: "Userid",
+            userId: "Userid"
           },
           {
             _id: "thing2id",
             title: "secondthing",
             description: "descripton of second thing",
-            imageUrl: "",
-            price: 4900,
+            imageUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Canon_EOS_60D_01.jpg",
+            price: 9900,
             userId: "Userid"
           }
         ]
