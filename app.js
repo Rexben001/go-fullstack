@@ -2,7 +2,21 @@ const express = require('express');// imports express
 
 const app = express();
 
+const mongoose = require('mongoose');
+
 const bodyParser= require('body-parser');
+
+//connecting to atlas
+
+mongoose.connect('mongodb+srv://Ezekoconcept:jumokeade@cluster0-oxzps.mongodb.net/admin?retryWrites=true&w=majority')
+    .then(()=>{
+        console.log('connected to mongodb atlas successfully!');
+    })
+    .catch((error)=>{
+        console.log({
+            error: error
+        });
+    })
 
 //middlewares
 
@@ -19,15 +33,18 @@ app.use((req,res,next)=>{
 
 app.use(bodyParser.json()); // change request to json
 
-app.post('/api/stuff', (req, res, next)=>{
+app.post('/api/stuff', (req, res)=>{
     console.log(req.body);
-    next();
+    res.status(201).json({
+        message: "Thing Created!"
+    });
+    
 });
-
-app.use((req, res )=>{
+/*
+app.use((req, res)=>{
     res.status(201).json({message: 'thing created successfully'});
 
-})
+});
 app.use('/api/stuff', (req, res)=>{
     res.json([
         {
@@ -49,7 +66,7 @@ app.use('/api/stuff', (req, res)=>{
         ]
     )
 })
-
+*/
 
 
 module.exports = app; //allows app to be imported to other files
