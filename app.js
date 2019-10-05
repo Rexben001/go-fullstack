@@ -2,6 +2,8 @@ const express = require('express');// imports express
 
 const app = express();
 
+const Thing = require('./models/thing');
+
 const mongoose = require('mongoose');
 
 const bodyParser= require('body-parser');
@@ -16,7 +18,7 @@ mongoose.connect('mongodb+srv://Ezekoconcept:jumokeade@cluster0-oxzps.mongodb.ne
         console.log({
             error: error
         });
-    })
+    });
 
 //middlewares
 
@@ -32,21 +34,40 @@ app.use((req,res,next)=>{
 }); //allows access to api in any platform
 
 app.use(bodyParser.json()); // change request to json
+//next line creates the post route that handles thing creation according to the frontend app created
+app.post('/api/stuff', (req, res, next)=>{
+    const thing = new Thing({
+        title: req.body.title,
+        description: req.body.description,
+        imageUrl: req.body.imageUrl,
+        price: req.body.price,
+        userId: req.body.userId
+    }); //protoype for retrieving data sent with post api call
 
-app.post('/api/stuff', (req, res)=>{
-    console.log(req.body);
-    res.status(201).json({
-        message: "Thing Created!"
-    });
-    
+    thing.save().then(()=>{
+        res.status(201).json({
+            message: 'post saved successfully'
+        })
+    }).catch((error)=>{
+        res.status(400).json({
+            error: error
+        });
+    }); // saving data... and sending response if successfully saved
+    next();
 });
-/*
-app.use((req, res)=>{
-    res.status(201).json({message: 'thing created successfully'});
 
+//get route(returns all things in the database)
+app.use((req, res)=>{
+   Thing.find().then((things)=>{
+       res.status(200).json(things);
+   }).catch((error)=>{
+       res.status(400).json({
+           error: error
+       })
+   })
 });
 app.use('/api/stuff', (req, res)=>{
-    res.json([
+    const stuff = ([
         {
             _id: "thingid",
             title: "first thing",
@@ -65,8 +86,8 @@ app.use('/api/stuff', (req, res)=>{
           }
         ]
     )
-})
-*/
+});
+
 
 
 module.exports = app; //allows app to be imported to other files
